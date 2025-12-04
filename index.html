@@ -1,64 +1,216 @@
-<!doctype html>
-<html>
-    <head>
-        <meta charset=utf-8>
-        <title>you suck at streaming</title>
-        <meta name="description" content="arctismo's (+Ckris's) web based osu! stream speed benchmark">
-        <meta name="viewport" content="initial-scale=1"/>
-        <meta name="viewport" content="width=device-width"/>
-        <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'/>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"/></script>
-		<script type="text/javascript" src="libs/canvasjs.min.js"></script>
-        <script src="main.js"/></script>
-        <link rel="stylesheet" href="style.css">
-        <a href="https://github.com/arctic5/osuStreamSpeed.js">
-        <img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/121cd7cbdc3e4855075ea8b558508b91ac463ac2/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_green_007200.png"></a>
-		<script type="text/javascript">
-// Stuff here later TODO
-	</script>
-    </head>
-    <body>
-        <div id = "ui">
-            <h2>osu! Stream Speed Benchmark</h2>
-			<h3 id="debugg"></h3>
-            <form id = "streamSettings">
-				<input type="radio" name="roption" onClick="radiof(1)" value="clicks" checked /> Clicks 
-				<input type="radio" name="roption" onClick="radiof(2)" value="time" /> Time
-				<br /><br />
-				<div id="numClicks">
-                Number of clicks<br>
-                <input id = "clickNum" type="number" min="3"/><br><br>
-				</div>
-				<div id="timeClicks" style="display:none">
-				Time:<br/>
-				<input id="clickTime" type="number" min="2"/><br /><br />
-				</div>
-                Key 1<br>
-                <input id = "key1" maxlength="1"/><br><br>
-                Key 2<br>
-                <input id = "key2" maxlength="1"/><br><br>
-                <button id = "submit" onclick = "beginTest()" type="button">Begin Test</button><br>
-				<button id="stopbtn" onClick="endTest()" type="button" style="display:none">Stop Test</button><br>
-                <div id = "status">Time starts when you make your first click.</div>
-            </form>
-            <h3>Your Results:</h3>
-            <div id = "Result">
-                Tap Speed: 0 taps / 0 seconds.<br>
-                Stream Speed: 0 bpm.<br>
-                Unstable Rate: 0.
-            </div>
-			<br/>
-			<div id="bpmchart" style="height: 300px; width:400px;margin:auto">
-			</div>
-        </div>
-        <br>
-        <footer>
-            Written by arctic + ckrisirkc<br>
-            GPLv2 Licensed<br>
-            <a href="https://github.com/arctic5/osuStreamSpeed.js">View Source on Github</a>
-        </footer>
+<!DOCTYPE html>
+<html lang="en">
 
-        <!--GOOGLE ANALYTICS HERE-->
-        <script src="http://arctic5.github.io/js/ga.js"></script>
-    </body>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="canvasjs-1.8.0/jquery.canvasjs.min.js"></script>
+    <script src="main.js"></script>
+    <title>osu! Stream Speed Benchmark</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+        }
+
+        body {
+            background-image: url("background.jpg");
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        #content {
+            margin: 50px auto;
+            background: rgba(0, 0, 0, 0.85);
+            padding: 40px 50px;
+            width: 70%;
+            max-width: 900px;
+            border-radius: 20px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 3em;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.7);
+        }
+
+        label {
+            font-size: 1em;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        label:hover {
+            color: #00ff9f;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            padding: 10px 12px;
+            margin: 8px 0 18px;
+            width: 100px;
+            border-radius: 8px;
+            border: 1px solid #00ff7f;
+            text-align: center;
+            font-size: 1em;
+            color: #00ff7f;
+            background-color: #111;
+            transition: all 0.2s;
+        }
+
+        input[type="number"]:hover,
+        input[type="text"]:hover {
+            outline: none;
+            border-color: #00ff7f;
+        }
+
+        button:not([class]) {
+            display: none;
+        }
+
+        .button {
+            padding: 12px 25px;
+            margin: 8px 12px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            background-color: #00c853;
+            color: #fff;
+            font-weight: bold;
+            transition: transform 0.15s, background 0.3s;
+        }
+
+        .button:hover {
+            transform: scale(1.05);
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 1.15em;
+            font-style: italic;
+        }
+
+        #result {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1.3em;
+            transition: background 0.3s;
+        }
+
+        #result:hover {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        #options {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 1.3em;
+            transition: background 0.3s;
+        }
+
+        #chartContainer {
+            margin: 35px auto 80px;
+            width: 100%;
+            max-width: 650px;
+            height: 350px;
+        }
+
+        .footer {
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 0.95em;
+            border-top: 2px solid #00ff7f;
+        }
+
+        .footer a {
+            color: #00ffb3;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+            color: #ffffff;
+        }
+
+        label input[type="checkbox"] {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="content">
+        <h1>osu! Stream Speed Benchmark</h1>
+
+        <section id="options">
+            <div id="radiobtns">
+                <label>
+                    <input type="radio" name="roption" onClick="radiof(1)" value="clicks"> Clicks
+                </label>
+                <label>
+                    <input type="radio" name="roption" onClick="radiof(2)" value="time" checked> Time
+                </label>
+            </div>
+
+            <div>
+                <label><input type="checkbox" name="cmouse"> Enable mouse buttons</label>
+            </div>
+            <br>
+
+            <div id="numClicks">
+                Number of clicks<br>
+                <input id="clickNum" type="number" min="3">
+                <br><br>
+            </div>
+
+            <div id="timeClicks" style="display:none">
+                Time:<br>
+                <input id="clickTime" type="number" min="2">
+                <br><br>
+            </div>
+
+            Key 1<br>
+            <input id="key1" class="keyButtons" type="text" maxlength="1"><br>
+            Key 2<br>
+            <input id="key2" class="keyButtons" type="text" maxlength="1"><br><br>
+
+            <button id="submit" class="button" onclick="beginTest()" type="button">Begin Test</button>
+            <button id="stopbtn" class="button" onClick="endTest()" type="button" style="display: none">Stop Test</button>
+
+            <div id="status">Time starts when you make your first click.</div>
+
+            <h3>Your Results:</h3>
+            <div id="result">
+                Tap Speed: 0 taps / 0 seconds<br>
+                Stream Speed: 0 bpm<br>
+                Unstable Rate: 0
+            </div>
+
+            <div id="chartContainer"></div>
+        </section>
+    </div>
+
+    <footer class="footer">
+        Original by arctic, rewritten by Ckris, edited by zymooo<br>
+        <a href="https://github.com/Zymo5221/osuStreamSpeed.js">View Source on Github</a>
+    </footer>
+</body>
+
 </html>
