@@ -132,13 +132,13 @@ function update(click) {
         if (timeDiffs.length < 2) {
             $("div#result").html("\
 		Tap Speed: " + (clickTimes.length.toString() + " taps / " + streamtime.toFixed(1)) + " seconds<br>\
-		Stream Speed: " + (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000) / 4) * 100) / 100).toFixed(1) + " bpm<br>\
+		Stream Speed: " + (Math.round((((clickTimes.length - 1) / (Date.now() - beginTime) * 60000) / 4) * 100) / 100).toFixed(1) + " bpm<br>\
 		Unstable Rate: n/a\
 	");
         } else {
             $("div#result").html("\
 		    Tap Speed: " + (clickTimes.length.toString() + " taps / " + streamtime.toFixed(1)) + " seconds<br>\
-		    Stream Speed: " + (Math.round((((clickTimes.length) / (Date.now() - beginTime) * 60000) / 4) * 100) / 100).toFixed(1) + " bpm<br>\
+		    Stream Speed: " + (Math.round((((clickTimes.length - 1) / (Date.now() - beginTime) * 60000) / 4) * 100) / 100).toFixed(1) + " bpm<br>\
 		    Unstable Rate: " + (Math.round(unstableRate * 100000) / 100000).toFixed(1) + "\
 	    ");
             if (counterNumber == 0) {
@@ -153,37 +153,39 @@ function update(click) {
     }
 }
 
-$(document).keypress(function(event) {
-    if (event.keyCode == 13 && testRunning == false)
-        beginTest();
-    if (testRunning == true)
-    {
-		const char = String.fromCharCode(event.which).toLowerCase();
-        if (char == key1 || char == key2) // Any reason there are two of these? Removed one...
-        {
-            switch (beginTime) {
-                case -1:
-                    beginTime = Date.now();
-                    $("div#status").html("Test currently running.");
-                    updater = setInterval(function() {
-                        update(false);
-                    }, 16.6);
+let keyHeld = {};
 
-                    if ($("input[name='roption']:checked").val() == "time") {
-                        endTimer = setTimeout(function() {
-                            endTest();
-                        }, timeLimit * 1000);
-                    }
-                default:
-                    update(true);
-                    break;
-            }
-            if ((clickTimes.length == clickLimit) && ($("input[name='roption']:checked").val() == "clicks")) {
-                endTest();
-                return;
-            }
+$(document).keydown(function(event) {
+    if (event.keyCode == 13 && testRunning == false) beginTest();
+    if (!testRunning) return;
+
+    const char = event.key.toLowerCase();
+    if ((char == key1 || char == key2) && !keyHeld[char]) {
+        keyHeld[char] = true; // dont allow to simply hold the key
+
+        switch (beginTime) {
+            case -1:
+                beginTime = Date.now();
+                $("div#status").html("Test currently running.");
+                updater = setInterval(function() { update(false); }, 16.6);
+
+                if ($("input[name='roption']:checked").val() == "time") {
+                    endTimer = setTimeout(function() { endTest(); }, timeLimit * 1000);
+                }
+            default:
+                update(true);
+                break;
+        }
+
+        if ((clickTimes.length >= clickLimit) && ($("input[name='roption']:checked").val() == "clicks")) {
+            endTest();
         }
     }
+});
+
+$(document).keyup(function(event) {
+    const char = event.key.toLowerCase();
+    keyHeld[char] = false; // allow next press
 });
 
 $(document).mousedown(function(event) {
@@ -256,7 +258,15 @@ $(document).ready(function() {
     else
         $("input[name='cmouse']").prop("checked", localStorage.getItem('mouse') == "true");
 
-    radiof(2);
+    if ($("input[name='roption']:checked").val() == "clicks")
+    {
+        radiof(1);
+    }
+
+    if ($("input[name='roption']:checked").val() == "time")
+    {
+        radiof(2);
+    }
 
     $("#chartContainer").CanvasJSChart({
         zoomEnabled: true,

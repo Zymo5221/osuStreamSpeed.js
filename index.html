@@ -12,7 +12,7 @@
     <style>
         * {
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
             margin: 0;
             padding: 0;
             color: #fff;
@@ -28,13 +28,31 @@
 
         #content {
             margin: 50px auto;
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             padding: 40px 50px;
             width: 70%;
             max-width: 900px;
             border-radius: 20px;
             text-align: center;
             transition: transform 0.3s ease;
+        }
+
+        #result
+        {
+            width: 18em;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        table
+        {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        td
+        {
+            padding: 5px;
         }
 
         h1 {
@@ -53,14 +71,18 @@
             color: #00ff9f;
         }
 
+        span
+        {
+            text-align: center;
+        }
+
         input[type="number"],
         input[type="text"] {
             padding: 10px 12px;
             margin: 8px 0 18px;
             width: 100px;
             border-radius: 8px;
-            border: 1px solid #00ff7f;
-            text-align: center;
+            border: 3px solid #00ff7f;
             font-size: 1em;
             color: #00ff7f;
             background-color: #111;
@@ -82,7 +104,7 @@
             margin: 8px 12px;
             font-size: 1.2em;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
             background-color: #00c853;
             color: #fff;
@@ -104,7 +126,7 @@
             margin-top: 25px;
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 1.3em;
             transition: background 0.3s;
         }
@@ -117,7 +139,7 @@
             margin-top: 25px;
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            border-radius: 8px;
             font-size: 1.3em;
             transition: background 0.3s;
         }
@@ -160,6 +182,9 @@
         <h1>osu! Stream Speed Benchmark</h1>
 
         <section id="options">
+            <h3>Options:</h3>
+            <br>
+
             <div id="radiobtns">
                 <label>
                     <input type="radio" name="roption" onClick="radiof(1)" value="clicks"> Clicks
@@ -180,16 +205,30 @@
                 <br><br>
             </div>
 
-            <div id="timeClicks" style="display:none">
-                Time:<br>
+            <div id="timeClicks" style="display: none">
+                Time<br>
                 <input id="clickTime" type="number" min="2">
                 <br><br>
             </div>
 
-            Key 1<br>
-            <input id="key1" class="keyButtons" type="text" maxlength="1"><br>
-            Key 2<br>
-            <input id="key2" class="keyButtons" type="text" maxlength="1"><br><br>
+            <table>
+                <tr>
+                    <td>
+                        <span>
+                            Key 1<br>
+                            <input id="key1" class="keyButtons" type="text" maxlength="1">
+                        </span>
+                    </td>
+                    <td>
+                        <span>
+                            Key 2<br>
+                            <input id="key2" class="keyButtons" type="text" maxlength="1">
+                        </span>
+                    </td>
+                </tr>
+            </table>
+
+            <br>
 
             <button id="submit" class="button" onclick="beginTest()" type="button">Begin Test</button>
             <button id="stopbtn" class="button" onClick="endTest()" type="button" style="display: none">Stop Test</button>
@@ -208,7 +247,7 @@
     </div>
 
     <footer class="footer">
-        Original by arctic, rewritten by Ckris, edited by zymooo<br>
+        Original by arctic, rewritten by Ckris, designed and rewritten by zymooo<br>
         <a href="https://github.com/Zymo5221/osuStreamSpeed.js">View Source on Github</a>
     </footer>
 </body>
